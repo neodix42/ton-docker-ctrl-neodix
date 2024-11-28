@@ -1,7 +1,7 @@
 FROM ghcr.io/ton-blockchain/ton:latest
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y lsb-release software-properties-common gnupg gperf make cmake libblas-dev wget gcc openssl libgsl-dev zlib1g-dev libsecp256k1-dev libmicrohttpd-dev libsodium-dev liblz4-dev python3-dev python3-pip sudo git fio iproute2 plzip pv curl libjemalloc-dev ninja-build rocksdb-tools \
+    && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y lsb-release software-properties-common gnupg gperf make cmake libblas-dev wget gcc openssl libgsl-dev zlib1g-dev libmicrohttpd-dev libsodium-dev liblz4-dev python3-dev python3-pip sudo git fio iproute2 plzip pv curl libjemalloc-dev ninja-build rocksdb-tools autoconf automake libtool \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /var/ton-work/db/static /var/ton-work/db/import /var/ton-work/db/keyring /usr/bin/ton /usr/bin/ton/lite-client /usr/bin/ton/validator-engine /usr/bin/ton/validator-engine-console /usr/bin/ton/utils /usr/src/ton/crypto/fift/lib/ /usr/src/ton/crypto/smartcont /usr/bin/ton/crypto \
     && cd /usr/src/ton && git init && git remote add origin https://github.com/ton-blockchain/ton.git
