@@ -21,6 +21,9 @@ services:
       GLOBAL_CONFIG_URL: ${GLOBAL_CONFIG_URL}
       IGNORE_MINIMAL_REQS: ${IGNORE_MINIMAL_REQS}
       DUMP: ${DUMP}
+      ARCHIVE_TTL: ${ARCHIVE_TTL}
+      STATE_TTL: ${STATE_TTL}
+      VERBOSITY: ${VERBOSITY}
     logging:
       driver: "json-file"
       options:
