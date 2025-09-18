@@ -46,6 +46,26 @@ fi
 echo "Setting processor cores"
 sed -i -e "s/--threads\s[[:digit:]]\+/--threads ${CPUS}/g" /etc/systemd/system/validator.service
 
+echo "Configuring TTL and verbosity settings"
+# Set default values if not provided
+ARCHIVE_TTL=${ARCHIVE_TTL:-86400}
+STATE_TTL=${STATE_TTL:-86400}
+VERBOSITY=${VERBOSITY:-1}
+
+# Replace existing --verbosity value with environment variable
+sed -i -e "s/--verbosity\s[[:digit:]]\+/--verbosity ${VERBOSITY}/g" /etc/systemd/system/validator.service
+
+# Replace existing --archive-ttl value with environment variable
+sed -i -e "s/--archive-ttl\s[[:digit:]]\+/--archive-ttl ${ARCHIVE_TTL}/g" /etc/systemd/system/validator.service
+
+# Add --state-ttl parameter if not already present
+if ! grep -q "\-\-state-ttl" /etc/systemd/system/validator.service; then
+    sed -i -e "s/--archive-ttl ${ARCHIVE_TTL}/--archive-ttl ${ARCHIVE_TTL} --state-ttl ${STATE_TTL}/g" /etc/systemd/system/validator.service
+else
+    # Replace existing --state-ttl value if already present
+    sed -i -e "s/--state-ttl\s[[:digit:]]\+/--state-ttl ${STATE_TTL}/g" /etc/systemd/system/validator.service
+fi
+
 echo "Starting validator"
 systemctl start validator
 echo "Starting mytoncore"
