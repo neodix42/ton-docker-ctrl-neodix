@@ -5,12 +5,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        GLOBAL_CONFIG_URL: ${GLOBAL_CONFIG_URL}
-        MYTONCTRL_VERSION: ${MYTONCTRL_VERSION}
-        TELEMETRY: ${TELEMETRY}
-        IGNORE_MINIMAL_REQS: ${IGNORE_MINIMAL_REQS}
-        MODE: ${MODE}
     restart: always
     tty: true
     volumes:
@@ -21,9 +15,14 @@ services:
       GLOBAL_CONFIG_URL: ${GLOBAL_CONFIG_URL}
       IGNORE_MINIMAL_REQS: ${IGNORE_MINIMAL_REQS}
       DUMP: ${DUMP}
+      MODE: ${MODE}
       ARCHIVE_TTL: ${ARCHIVE_TTL}
       STATE_TTL: ${STATE_TTL}
       VERBOSITY: ${VERBOSITY}
+      PUBLIC_IP: ${PUBLIC_IP}
+      VALIDATOR_PORT: ${VALIDATOR_PORT}
+      LITESERVER_PORT: ${LITESERVER_PORT}
+      VALIDATOR_CONSOLE_PORT: ${VALIDATOR_CONSOLE_PORT}
     logging:
       driver: "json-file"
       options:

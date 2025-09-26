@@ -1,8 +1,10 @@
 # ton-docker-ctrl
 
 Tested operating systems:
+* Ubuntu 20.04
 * Ubuntu 22.04
 * Ubuntu 24.04
+* Debian 11
 * Debian 12
 
 ## Prerequisites
@@ -22,6 +24,10 @@ Build environment variables (are configured in the .env file):
 * **ARCHIVE_TTL** - Archive time-to-live in seconds for the validator (default **86400**)
 * **STATE_TTL** - State time-to-live in seconds for the validator (default **86400**)
 * **VERBOSITY** - Verbosity level for the validator engine (default **1**)
+* **PUBLIC_IP** - Used when automatic detection of external IP does not work, e.g. in Kubernetes.
+* **VALIDATOR_PORT** - Set custom validator UDP port (default **random**)
+* **LITESERVER_PORT** - Set custom lite-server TCP port (default **random**)
+* **VALIDATOR_CONSOLE_PORT** - Set custom validator-console TCP port (default **random**)
 
 ## Run TON validator with MyTonCtrl v2 in docker
 
@@ -49,7 +55,14 @@ This command will not download a huge whole TON blockchain dump, but defines onl
 
 * Clone: `git clone https://github.com/ton-blockchain/ton-docker-ctrl.git && cd ./ton-docker-ctrl`
 * Build: `docker build -t ton-docker-ctrl .`
-* Run: `docker run -d -v ton-work:/var/ton-work -v mytoncore:/usr/local/bin/mytoncore --name ton-node ton-docker-ctrl:latest`
+* Run: 
+```bash
+docker run -d \
+--name ton-node \
+-v ton-work:/var/ton-work \
+-v mytoncore:/usr/local/bin/mytoncore \ 
+ton-docker-ctrl:latest
+```
 * Connect `docker exec -ti ton-node bash`
 
 ## Upgrade MyTonCtrl docker image from repository:
