@@ -22,25 +22,49 @@ Build environment variables (are configured in the .env file):
 * **ARCHIVE_TTL** - Archive time-to-live in seconds for the validator (default **86400**)
 * **STATE_TTL** - State time-to-live in seconds for the validator (default **86400**)
 * **VERBOSITY** - Verbosity level for the validator engine (default **1**)
+* **PUBLIC_IP** - Used when automatic detection of external IP does not work, e.g. in Kubernetes.
+* **VALIDATOR_PORT** - Set custom validator UDP port (default **random**)
+* **LITESERVER_PORT** - Set custom lite-server TCP port (default **random**)
+* **VALIDATOR_CONSOLE_PORT** - Set custom validator-console TCP port (default **random**)
 
-## Run TON node with MyTonCtrl v2 in docker:
-* Run `docker run -d --name ton-node -v /mnt/data/ton-work1:/var/ton-work -it ghcr.io/ton-blockchain/ton-docker-ctrl:latest`
-## Run Archive node with MyTonCtrl v2 in docker:
-* Run `docker run -d --name ton-node -v /mnt/data/ton-work1:/var/ton-work -e MODE="liteserver" -e DUMP="true" -e ARCHIVE_TTL="1000000000" -e STATE_TTL="1000000000" -it ghcr.io/ton-blockchain/ton-docker-ctrl:latest`
+## Run TON validator with MyTonCtrl v2 in docker
+
+This is the simplest and the quickest way to set up and start the TON validator.
+It will use a historical dump of data to speed up the initial sync process.
+It will not start validation unless you top up the wallet.
+This command will create two docker volumes `ton-work` and `mytoncore`. The first one will contain the blockchain data, and the second - MyTonCtrl settings and most importantly wallets' data.
+Real paths of these volumes can be found using `docker volume inspect <volume-name>` command.
+
+We recommend to change default Docker volumes' location, since the blockchain's data can grow rapidly, and TON validator require fast disks.
+
+Also, make sure you backed up your wallet data, that can be found in `<mytoncore-volume-path>/wallets`
+
+* Start container in the background: `docker run -d --name ton-node -v ton-work:/var/ton-work -v mytoncore:/usr/local/bin/mytoncore -e DUMP="true" -it ghcr.io/ton-blockchain/ton-docker-ctrl:latest`
+* Watch logs: `docker logs ton-node`
+* Use MyTonCtrl, go inside the container `docker exec -ti ton-node bash` and type `mytonctrl`.
+
+## Run Archive node with MyTonCtrl v2 in docker
+
+This command will not download a huge whole TON blockchain dump, but defines only TTL parameters for new blocks.
+
+* Run `docker run -d --name ton-node -v /mnt/data/ton-work1:/var/ton-work -v mytoncore:/usr/local/bin/mytoncore -e DUMP="true" -e ARCHIVE_TTL="1000000000" -e STATE_TTL="1000000000" -it ghcr.io/ton-blockchain/ton-docker-ctrl:latest`
 
 ## Build Docker image from sources and run MyTonCtrl v2:
 
 * Clone: `git clone https://github.com/ton-blockchain/ton-docker-ctrl.git && cd ./ton-docker-ctrl`
-* Run: `docker compose up --build -d`
-* Connect `docker compose exec -it node bash -c "mytonctrl"`
+* Build: `docker build -t ton-docker-ctrl .`
+* Run: 
+```bash
+docker run -d \
+--name ton-node \
+-v ton-work:/var/ton-work \
+-v mytoncore:/usr/local/bin/mytoncore \ 
+ton-docker-ctrl:latest
+```
+* Connect `docker exec -ti ton-node bash`
 
 ## Upgrade MyTonCtrl docker image from repository:
 * Pull docker image: `docker pull docker pull ghcr.io/ton-blockchain/ton-docker-ctrl:latest`
-
-## Upgrade MyTonCtrl docker images from sources:
-
-* Build new image: `docker compose build ton-node`
-* Run new version: `docker compose up -d`
 
 ## Migrate non-Docker fullnode or validator to a dockerized MyTonCtrl v2
 
@@ -63,4 +87,25 @@ docker logs ton-node
 Get inside the container and run MyTonCtrl
 ```bash
 docker exec -ti ton-node bash
+```
+
+Start the container skipping original entrypoint execution
+```bash
+docker run -it --entrypoint=bash ghcr.io/ton-blockchain/ton-docker-ctrl:latest
+```
+
+Volume inspection
+```bash
+
+docker volume ls
+docker volume inspect ton-work
+docker volume inspect mytoncore
+```
+
+Uninstall the TON node
+
+```bash
+docker stop ton-node
+docker rm ton-node
+docker volume rm mytoncore ton-work
 ```

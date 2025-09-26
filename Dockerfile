@@ -1,16 +1,6 @@
 FROM ghcr.io/ton-blockchain/ton:latest
 ENV DEBIAN_FRONTEND=noninteractive
 
-ENV MYTONCTRL_VERSION=master
-ENV TELEMETRY=true
-ENV DUMP=false
-ENV MODE=validator
-ENV IGNORE_MINIMAL_REQS=false
-ENV GLOBAL_CONFIG_URL=https://ton.org/global.config.json
-ENV ARCHIVE_TTL=86400
-ENV STATE_TTL=86400
-ENV VERBOSITY=1
-
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y lsb-release software-properties-common gnupg gperf make cmake libblas-dev wget gcc openssl libgsl-dev zlib1g-dev libmicrohttpd-dev libsodium-dev liblz4-dev python3-dev python3-pip sudo git fio iproute2 plzip pv curl libjemalloc-dev ninja-build rocksdb-tools autoconf automake libtool iputils-ping \
     && rm -rf /var/lib/apt/lists/* \

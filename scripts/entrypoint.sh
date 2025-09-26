@@ -1,16 +1,40 @@
 #!/bin/bash
 set -e
 
+GLOBAL_CONFIG_URL=${GLOBAL_CONFIG_URL:-https://ton.org/global.config.json}
+ARCHIVE_TTL=${ARCHIVE_TTL:-86400}
+STATE_TTL=${STATE_TTL:-86400}
+VERBOSITY=${VERBOSITY:-1}
+IGNORE_MINIMAL_REQS=${IGNORE_MINIMAL_REQS:-false}
+TELEMETRY=${TELEMETRY:-true}
+DUMP=${DUMP:-false}
+MODE=${MODE:-validator}
+MYTONCTRL_VERSION=${MYTONCTRL_VERSION:-master}
+
+echo "Started with environment variables:"
+echo
+echo IGNORE_MINIMAL_REQS $IGNORE_MINIMAL_REQS
+echo DUMP $DUMP
+echo MYTONCTRL_VERSION $MYTONCTRL_VERSION
+echo GLOBAL_CONFIG_URL $GLOBAL_CONFIG_URL
+echo ARCHIVE_TTL $ARCHIVE_TTL
+echo STATE_TTL $STATE_TTL
+echo VERBOSITY $VERBOSITY
+echo TELEMETRY $TELEMETRY
+echo MODE $MODE
+echo PUBLIC_IP $PUBLIC_IP
+echo VALIDATOR_PORT $VALIDATOR_PORT
+echo LITESERVER_PORT $LITESERVER_PORT
+echo VALIDATOR_CONSOLE_PORT $VALIDATOR_CONSOLE_PORT
+
 # check machine configuration
+echo
 echo -e "Checking system requirements"
 
 cpus=$(nproc)
 memory=$(cat /proc/meminfo | grep MemTotal | awk '{print $2}')
 CPUS=$(expr $(nproc) - 1)
-GLOBAL_CONFIG_URL=${GLOBAL_CONFIG_URL:-https://ton.org/testnet-global.config.json}
-ARCHIVE_TTL=${ARCHIVE_TTL:-86400}
-STATE_TTL=${STATE_TTL:-86400}
-VERBOSITY=${VERBOSITY:-1}
+
 
 echo "This machine has ${cpus} CPUs and ${memory}KB of Memory"
 if [ "$IGNORE_MINIMAL_REQS" != true ] && ([ "${cpus}" -lt 16 ] || [ "${memory}" -lt 64000000 ]); then
