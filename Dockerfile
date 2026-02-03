@@ -1,16 +1,17 @@
-FROM ghcr.io/ton-blockchain/ton:latest
+ARG TON_BRANCH=latest
+FROM ghcr.io/ton-blockchain/ton:${TON_BRANCH}
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y lsb-release software-properties-common gnupg gperf make cmake libblas-dev wget gcc openssl libgsl-dev zlib1g-dev libmicrohttpd-dev libsodium-dev liblz4-dev python3-dev python3-pip sudo git fio iproute2 plzip pv curl libjemalloc-dev ninja-build rocksdb-tools autoconf automake libtool iputils-ping \
+    && apt-get install --no-install-recommends -y lsb-release software-properties-common gnupg gperf make cmake libblas-dev wget gcc libgsl-dev python3-dev python3-pip sudo git fio iproute2 plzip pv curl libjemalloc-dev ninja-build rocksdb-tools autoconf automake libtool iputils-ping \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /var/ton-work/db/static /var/ton-work/db/import /var/ton-work/db/keyring /usr/bin/ton /usr/bin/ton/lite-client /usr/bin/ton/validator-engine /usr/bin/ton/validator-engine-console /usr/bin/ton/utils /usr/src/ton/crypto/fift/lib/ /usr/src/ton/crypto/smartcont /usr/bin/ton/crypto \
     && cd /usr/src/ton && git init && git remote add origin https://github.com/ton-blockchain/ton.git \
-    && wget https://apt.llvm.org/llvm.sh  \
+    && wget --tries=10 --retry-connrefused --waitretry=3 https://apt.llvm.org/llvm.sh  \
     && chmod +x llvm.sh \
-    && ./llvm.sh 16 clang  \
-    && ln /usr/bin/clang-16 /usr/bin/clang  \
-    && ln /usr/bin/clang++-16 /usr/bin/clang++ \
+    && ./llvm.sh 21 clang  \
+    && ln /usr/bin/clang-21 /usr/bin/clang  \
+    && ln /usr/bin/clang++-21 /usr/bin/clang++ \
     && cp /usr/local/bin/lite-client /usr/bin/ton/lite-client/ \
     && cp /usr/local/bin/validator-engine /usr/bin/ton/validator-engine \
     && cp /usr/local/bin/validator-engine-console /usr/bin/ton/validator-engine-console/ \

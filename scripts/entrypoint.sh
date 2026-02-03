@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+TON_BRANCH=${TON_BRANCH:-latest}
 GLOBAL_CONFIG_URL=${GLOBAL_CONFIG_URL:-https://ton.org/global.config.json}
 ARCHIVE_TTL=${ARCHIVE_TTL:-86400}
 STATE_TTL=${STATE_TTL:-86400}
@@ -13,6 +14,7 @@ MYTONCTRL_VERSION=${MYTONCTRL_VERSION:-master}
 
 echo "Started with environment variables:"
 echo
+echo TON_BRANCH $TON_BRANCH
 echo IGNORE_MINIMAL_REQS $IGNORE_MINIMAL_REQS
 echo DUMP $DUMP
 echo MYTONCTRL_VERSION $MYTONCTRL_VERSION
@@ -35,6 +37,11 @@ cpus=$(nproc)
 memory=$(cat /proc/meminfo | grep MemTotal | awk '{print $2}')
 CPUS=$(expr $(nproc) - 1)
 
+if [[ -z "$PUBLIC_IP" ]]; then
+  echo "PUBLIC_IP is not set!"
+  exit 2
+fi
+
 
 echo "This machine has ${cpus} CPUs and ${memory}KB of Memory"
 if [ "$IGNORE_MINIMAL_REQS" != true ] && ([ "${cpus}" -lt 16 ] || [ "${memory}" -lt 64000000 ]); then
@@ -52,9 +59,11 @@ if [ ! -f /var/ton-work/db/mtc_done ]; then
   if [ "$TELEMETRY" = false ]; then export TELEMETRY="-t"; else export TELEMETRY=""; fi
   if [ "$IGNORE_MINIMAL_REQS" = true ]; then export IGNORE_MINIMAL_REQS="-i"; else export IGNORE_MINIMAL_REQS=""; fi
   if [ "$DUMP" = true ]; then export DUMP="-d"; else export DUMP=""; fi
-  /bin/bash /tmp/install.sh ${TELEMETRY} ${IGNORE_MINIMAL_REQS} -b ${MYTONCTRL_VERSION} -m ${MODE} ${DUMP}
+  if [ "$TON_BRANCH" != "latest" ]; then export NETWORK="-n testnet"; else export NETWORK=""; fi
+  echo /bin/bash /tmp/install.sh ${TELEMETRY} ${IGNORE_MINIMAL_REQS} -b ${MYTONCTRL_VERSION} -m ${MODE} ${DUMP} ${NETWORK}
+  /bin/bash /tmp/install.sh ${TELEMETRY} ${IGNORE_MINIMAL_REQS} -b ${MYTONCTRL_VERSION} -m ${MODE} ${DUMP} ${NETWORK}
   echo
-  echo "INSTALLED - updating and restarting services"
+  echo "Updating and restarting services"
   echo
   ln -sf /proc/$$/fd/1 /usr/local/bin/mytoncore/mytoncore.log
   ln -sf /proc/$$/fd/1 /var/log/syslog
@@ -74,9 +83,9 @@ if [ ! -f /var/ton-work/db/mtc_done ]; then
 
   touch /var/ton-work/db/mtc_done
 
-  echo "ReStarting validator"
+  echo "Restarting validator"
   systemctl restart validator
-  echo "ReStarting mytoncore"
+  echo "Restarting mytoncore"
   systemctl restart mytoncore
 else
   echo "MyTonCtrl already installed"

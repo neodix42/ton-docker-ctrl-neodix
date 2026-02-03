@@ -1,17 +1,19 @@
-version: "3.3"
 services:
   ton-node:
     image: mytonctrl:2
     build:
       context: .
       dockerfile: Dockerfile
-    restart: always
+      args:
+        TON_BRANCH: ${TON_BRANCH:-latest}
+    restart: unless-stopped
     tty: true
     volumes:
       - ton:/var/ton-work
       - mytoncore:/usr/local/bin/mytoncore
     network_mode: host
     environment:
+      TON_BRANCH: ${TON_BRANCH}
       GLOBAL_CONFIG_URL: ${GLOBAL_CONFIG_URL}
       IGNORE_MINIMAL_REQS: ${IGNORE_MINIMAL_REQS}
       DUMP: ${DUMP}
