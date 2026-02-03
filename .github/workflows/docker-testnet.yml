@@ -37,7 +37,7 @@ jobs:
           push: true
           context: ./
           build-args: |
-            TON_BRANCH: testnet
-            GLOBAL_CONFIG_URL: https://ton.org/testnet-global.config.json
+            TON_BRANCH=testnet
+            GLOBAL_CONFIG_URL=https://ton.org/testnet-global.config.json
           tags: |
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:testnet
