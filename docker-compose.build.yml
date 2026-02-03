@@ -1,0 +1,7 @@
+services:
+  ton-node:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TON_BRANCH: ${TON_BRANCH:-latest}

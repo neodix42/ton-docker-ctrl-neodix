@@ -13,8 +13,9 @@ services:
       IGNORE_MINIMAL_REQS: ${IGNORE_MINIMAL_REQS}
       DUMP: ${DUMP}
       MODE: ${MODE}
-      ARCHIVE_TTL: ${ARCHIVE_TTL}
-      STATE_TTL: ${STATE_TTL}
+      ARCHIVE_BLOCKS: 0
+      ARCHIVE_TTL: 1000000000
+      STATE_TTL: 1000000000
       VERBOSITY: ${VERBOSITY}
       PUBLIC_IP: ${PUBLIC_IP}
       VALIDATOR_PORT: ${VALIDATOR_PORT}
@@ -27,4 +28,14 @@ services:
         max-file: "3"
 volumes:
   ton:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/ton/ton
   mytoncore:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/ton/mtc
