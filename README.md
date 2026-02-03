@@ -1,10 +1,10 @@
-# ton-docker-ctrl
+# TON Docker image with MyTonCtrl
+
+This is an official TON Docker image with MyTonCtrl administration utility inside. 
 
 Tested operating systems:
-* Ubuntu 20.04
 * Ubuntu 22.04
 * Ubuntu 24.04
-* Debian 11
 * Debian 12
 
 ## Prerequisites
@@ -94,7 +94,7 @@ Start archive fullnode:
 docker compose up
 ```
 
-## Build a Docker image from sources and run MyTonCtrl v2:
+## Build MyTonCtrl Docker image from sources
 
 ```bash
 git clone https://github.com/ton-blockchain/ton-docker-ctrl.git && cd ./ton-docker-ctrl
@@ -104,10 +104,29 @@ docker compose -f docker-compose.build.yml build
 
 Start the container `docker exec -ti ton-node bash`
 
-## Upgrade MyTonCtrl docker image from repository:
-* Pull docker image: `docker pull docker pull ghcr.io/ton-blockchain/ton-docker-ctrl:latest`
+## Upgrade TON node:
+There are three ways how to upgrade your TON node
 
-## Migrate non-Docker fullnode or validator to a dockerized MyTonCtrl v2
+Docker compose way
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Docker only way
+```bash
+docker pull docker pull ghcr.io/ton-blockchain/ton-docker-ctrl:latest
+```
+
+And from the container itself
+```bash
+docker exec -ti ton-node bash
+mytonctrl
+upgrade master
+
+```
+
+## Migrate non-Docker fullnode or validator to a containerized MyTonCtrl v2
 
 Specify paths to TON binaries and sources, as well as to TON work directory, but most importantly to MyTonCtrl settings and wallets.
 
