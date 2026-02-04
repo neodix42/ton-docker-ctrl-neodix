@@ -2,16 +2,14 @@
 
 This is an official TON Docker image with MyTonCtrl administration utility inside. 
 
-Tested operating systems:
-* Ubuntu 22.04
-* Ubuntu 24.04
-* Debian 12
+During the very first start of the container, it downloads and installs MyTonCtrl automatically.
 
 ## Prerequisites
 To run, you need docker-ce, docker-buildx-plugin:
 
 * [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 
+## Configuration
 Build environment variables are configured in the `.env `file:
 
 * **TON_BRANCH** - when building this image you can specify which TON branch binaries will be based on. Actually it is a TAG name of TON Docker image, but it coincides with the branch name (default: **latest**, i.e. master branch)
@@ -115,7 +113,7 @@ docker compose up -d
 
 Docker only way
 ```bash
-docker pull docker pull ghcr.io/ton-blockchain/ton-docker-ctrl:latest
+docker pull ghcr.io/ton-blockchain/ton-docker-ctrl:latest
 ```
 
 And from the container itself
