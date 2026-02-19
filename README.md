@@ -163,7 +163,7 @@ upgrade master
 Specify paths to TON binaries and sources, as well as to TON work directory, but most importantly to MyTonCtrl settings and wallets.
 
 ```bash
-docker run -d --name ton-node --restart always \
+docker run -d --name ton-node --network host --restart unless-stopped \
 -v /mnt/data/ton-work:/var/ton-work \
 -v /usr/bin/ton:/usr/bin/ton \
 -v /usr/src/ton:/usr/src/ton \
@@ -174,6 +174,7 @@ ghcr.io/ton-blockchain/ton-docker-ctrl:latest
 ## Read the logs
 ```bash
 docker logs ton-node
+docker logs -f ton-node # in real-time
 ```
 
 ## Get inside the container and run MyTonCtrl
