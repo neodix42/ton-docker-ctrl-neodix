@@ -18,7 +18,7 @@ Build environment variables are configured in the `.env `file:
 * **TELEMETRY** - Enable/Disable telemetry (default **true**)
 * **IGNORE_MINIMAL_REQS** - Ignore hardware requirements (default **false**)
 * **MODE** - Install MyTonCtrl with specified mode (validator or liteserver, default **validator**)
-* **DUMP** - Use pre-packaged dump. Reduces duration of initial synchronization, but it takes time to download the dump. You can view the download status in the logs `docker compose logs -f`. (default **false**)
+* **DUMP** - Use pre-packaged dump. Reduces duration of initial synchronization, but it takes time to download the dump. You can view the download status in the logs `docker-compose logs -f`. (default **false**)
 * **ARCHIVE_TTL** - Archive time-to-live in seconds for the validator (default **86400**)
 * **STATE_TTL** - State time-to-live in seconds for the validator (default **86400**)
 * **VERBOSITY** - Verbosity level for the validator engine (default **1**)
@@ -32,7 +32,7 @@ Build environment variables are configured in the `.env `file:
 This is the simplest and the quickest way to set up and start the TON validator.
 It will use a historical dump of data to speed up the initial sync process.
 It will not start validation unless you top up the wallet.
-Below docker-compose commands will create two docker volumes `ton-work` and `mytoncore`. 
+Below docker compose commands will create two docker volumes `ton-work` and `mytoncore`. 
 The first one will contain the blockchain data, and the second - MyTonCtrl settings and most importantly, wallets' data.
 Real paths of these volumes can be found using `docker volume inspect <volume-name>` command.
 
@@ -48,9 +48,11 @@ Download `docker-compose.yml` and `.env` files:
 wget https://raw.githubusercontent.com/ton-blockchain/ton-docker-ctrl/refs/heads/main/.env
 wget https://raw.githubusercontent.com/ton-blockchain/ton-docker-ctrl/refs/heads/main/docker-compose.yml
 ```
-Adjust `.env` as per your needs and start the container.
+Adjust `.env` as per your needs and start the container. You have to set `PUBLIC_IP` otherwise the container will not start.
 
-To run **TESTNET** fullnode or validator, change this in `.env`:
+After setting `PUBLIC_IP` and other parameters, you are ready to start the **MAINNET** node.
+
+To run **TESTNET** node, additionally change this in `.env`:
 ```bash
 TON_BRANCH=testnet
 GLOBAL_CONFIG_URL=https://ton.org/testnet-global.config.json
@@ -83,7 +85,7 @@ docker exec -ti ton-node bash
 mytonctrl
 ```
 ### Troubleshooting
-* Check the status of the container:
+Check the container logs:
 ```bash
 docker logs ton-node
 ```
@@ -114,7 +116,7 @@ volumes:
       device: /path/to/mtc_data 
 ```
 
-Start the archive fullnode:
+Remember to set `PUBLIC_IP` in `.env`. Start the archive node:
 ```bash
 docker compose up
 ```
@@ -126,12 +128,17 @@ git clone https://github.com/ton-blockchain/ton-docker-ctrl.git && cd ./ton-dock
 docker compose -f docker-compose.build.yml build
 ```
 
-Start the container `docker exec -ti ton-node bash`
+### Start the container
+
+At least set `PUBLIC_IP` variable in `.env` file otherwise the container will not start.
+```bash
+docker compose -f docker-compose.build.yml up -d
+```
 
 ## Upgrade TON node:
 There are three ways how to upgrade your TON node
 
-Docker compose way
+docker compose way
 ```bash
 docker compose pull
 docker compose up -d
@@ -142,16 +149,15 @@ Docker only way
 docker pull ghcr.io/ton-blockchain/ton-docker-ctrl:latest
 ```
 
-And from the container itself
+And from the running container itself
 ```bash
 docker exec -ti ton-node bash
 mytonctrl
 update master
 upgrade master
-
 ```
 
-## Migrate non-Docker fullnode or validator to a containerized MyTonCtrl v2
+## Migrate a non-Docker TON node to a containerized MyTonCtrl v2
 
 Specify paths to TON binaries and sources, as well as to TON work directory, but most importantly to MyTonCtrl settings and wallets.
 
@@ -164,22 +170,22 @@ docker run -d --name ton-node --restart always \
 ghcr.io/ton-blockchain/ton-docker-ctrl:latest
 ```
 
-Read the logs
+## Read the logs
 ```bash
 docker logs ton-node
 ```
 
-Get inside the container and run MyTonCtrl
+## Get inside the container and run MyTonCtrl
 ```bash
 docker exec -ti ton-node bash
 ```
 
-Start the container skipping the original entrypoint execution
+## Start the container skipping the original entrypoint execution
 ```bash
 docker run -it --entrypoint=bash ghcr.io/ton-blockchain/ton-docker-ctrl:latest
 ```
 
-Volume inspection
+## Volume inspection
 ```bash
 
 docker volume ls
@@ -187,8 +193,8 @@ docker volume inspect ton-work
 docker volume inspect mytoncore
 ```
 
-Uninstall the TON node
-
+## Uninstall the TON node
+The TON dblockchain data will be deleted, as well as MyTonCtrl settings and **wallets**.
 ```bash
 docker stop ton-node
 docker rm ton-node

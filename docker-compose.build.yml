@@ -1,7 +1,37 @@
 services:
   ton-node:
+    image: ton-node
+    container_name: ton-node
     build:
       context: .
       dockerfile: Dockerfile
       args:
         TON_BRANCH: ${TON_BRANCH:-latest}
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - ton:/var/ton-work
+      - mytoncore:/usr/local/bin/mytoncore
+    network_mode: host
+    environment:
+      TON_BRANCH: ${TON_BRANCH}
+      GLOBAL_CONFIG_URL: ${GLOBAL_CONFIG_URL}
+      IGNORE_MINIMAL_REQS: ${IGNORE_MINIMAL_REQS}
+      MYTONCTRL_VERSION: ${MYTONCTRL_VERSION}
+      DUMP: ${DUMP}
+      MODE: ${MODE}
+      ARCHIVE_TTL: ${ARCHIVE_TTL}
+      STATE_TTL: ${STATE_TTL}
+      VERBOSITY: ${VERBOSITY}
+      PUBLIC_IP: ${PUBLIC_IP}
+      VALIDATOR_PORT: ${VALIDATOR_PORT}
+      LITESERVER_PORT: ${LITESERVER_PORT}
+      VALIDATOR_CONSOLE_PORT: ${VALIDATOR_CONSOLE_PORT}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: 100m
+        max-file: "3"
+volumes:
+  ton:
+  mytoncore:

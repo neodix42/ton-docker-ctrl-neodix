@@ -69,8 +69,11 @@ if [ ! -f /var/ton-work/db/mtc_done ]; then
   ln -sf /proc/$$/fd/1 /usr/local/bin/mytoncore/mytoncore.log
   ln -sf /proc/$$/fd/1 /var/log/syslog
   sed -i 's/--logname \/var\/ton-work\/log//g' /etc/systemd/system/validator.service
-  sed -i 's/\[Service\]/\[Service\]\nStandardOutput=null\nStandardError=syslog/' /etc/systemd/system/validator.service
-  sed -i 's/\[Service\]/\[Service\]\nStandardOutput=null\nStandardError=syslog/' /etc/systemd/system/mytoncore.service
+  # Ensure service logs go to container stdout/stderr via console
+  sed -i '/^StandardOutput=/d;/^StandardError=/d' /etc/systemd/system/validator.service
+  sed -i '/^StandardOutput=/d;/^StandardError=/d' /etc/systemd/system/mytoncore.service
+  sed -i 's/\[Service\]/\[Service\]\nStandardOutput=journal+console\nStandardError=journal+console/' /etc/systemd/system/validator.service
+  sed -i 's/\[Service\]/\[Service\]\nStandardOutput=journal+console\nStandardError=journal+console/' /etc/systemd/system/mytoncore.service
   sed -i -e "s/--verbosity\s[[:digit:]]\+/--verbosity ${VERBOSITY}/g" /etc/systemd/system/validator.service
   sed -i -e "s/--archive-ttl\s[[:digit:]]\+/--archive-ttl ${ARCHIVE_TTL}/g" /etc/systemd/system/validator.service
 
@@ -84,6 +87,7 @@ if [ ! -f /var/ton-work/db/mtc_done ]; then
 
   touch /var/ton-work/db/mtc_done
 
+  systemctl daemon-reload
   echo "Restarting validator"
   systemctl restart validator
   echo "Restarting mytoncore"
