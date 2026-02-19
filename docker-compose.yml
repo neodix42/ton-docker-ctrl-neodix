@@ -1,6 +1,6 @@
 services:
   ton-node:
-    image: ghcr.io/neodix42/ton-docker-ctrl-neodix:${TON_BRANCH:-latest}
+    image: ghcr.io/ton-blockchain/ton-docker-ctrl:${TON_BRANCH:-latest}
     container_name: ton-node
     restart: unless-stopped
     ports:

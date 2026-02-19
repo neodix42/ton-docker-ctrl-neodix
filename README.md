@@ -69,11 +69,11 @@ docker volume create ton-work
 docker volume create mytoncore
 
 docker run -d --name ton-node \
+        --env-file .env \
+        -p "0.0.0.0:30001:30001/udp" \
+        -p "0.0.0.0:30003:30003/tcp" \
         -v ton-work:/var/ton-work \
         -v mytoncore:/usr/local/bin/mytoncore \
-        -e DUMP="true" \
-        -e TON_BRANCH="testnet" \
-        -e GLOBAL_CONFIG_URL="https://ton.org/testnet-global.config.json" \
         --restart unless-stopped \
         -it ghcr.io/ton-blockchain/ton-docker-ctrl:testnet
 ```
@@ -88,6 +88,7 @@ mytonctrl
 Check the container logs:
 ```bash
 docker logs ton-node
+docker logs -f ton-node # in real-time
 ```
 
 ## Run TON Archive node with MyTonCtrl v2
