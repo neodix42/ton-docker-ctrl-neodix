@@ -8,11 +8,13 @@ services:
       args:
         TON_BRANCH: ${TON_BRANCH:-latest}
     restart: unless-stopped
+    ports:
+      - "0.0.0.0:$VALIDATOR_PORT:$VALIDATOR_PORT"
+      - "0.0.0.0:$LITESERVER_PORT:$LITESERVER_PORT"
     tty: true
     volumes:
       - ton:/var/ton-work
       - mytoncore:/usr/local/bin/mytoncore
-    network_mode: host
     environment:
       TON_BRANCH: ${TON_BRANCH}
       GLOBAL_CONFIG_URL: ${GLOBAL_CONFIG_URL}
