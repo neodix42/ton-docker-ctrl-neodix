@@ -34,4 +34,6 @@ services:
         max-file: "3"
 volumes:
   ton:
+    name: ton-work
   mytoncore:
+    name: mytoncore

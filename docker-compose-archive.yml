@@ -30,12 +30,14 @@ services:
         max-file: "3"
 volumes:
   ton:
+    name: ton-work
     driver: local
     driver_opts:
       type: none
       o: bind
       device: /mnt/ton/ton
   mytoncore:
+    name: mytoncore
     driver: local
     driver_opts:
       type: none
