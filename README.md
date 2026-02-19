@@ -32,7 +32,8 @@ Build environment variables are configured in the `.env `file:
 This is the simplest and the quickest way to set up and start the TON validator.
 It will use a historical dump of data to speed up the initial sync process.
 It will not start validation unless you top up the wallet.
-This command will create two docker volumes `ton-work` and `mytoncore`. The first one will contain the blockchain data, and the second - MyTonCtrl settings and most importantly, wallets' data.
+Below docker-compose commands will create two docker volumes `ton-work` and `mytoncore`. 
+The first one will contain the blockchain data, and the second - MyTonCtrl settings and most importantly, wallets' data.
 Real paths of these volumes can be found using `docker volume inspect <volume-name>` command.
 
 We recommend changing default Docker volumes' location, since the blockchain's data can grow rapidly, 
@@ -40,14 +41,16 @@ and TON validator requires fast disks.
 
 Also, make sure you backed up your wallet data, that can be found in `<mytoncore-volume-path>/wallets`
 
+### Download the image and start the container
+
 Download `docker-compose.yml` and `.env` files:
 ```bash
-wget https://raw.githubusercontent.com/neodix42/ton-docker-ctrl-neodix/refs/heads/main/.env
-wget https://raw.githubusercontent.com/neodix42/ton-docker-ctrl-neodix/refs/heads/main/docker-compose.yml
+wget https://raw.githubusercontent.com/ton-blockchain/ton-docker-ctrl/refs/heads/main/.env
+wget https://raw.githubusercontent.com/ton-blockchain/ton-docker-ctrl/refs/heads/main/docker-compose.yml
 ```
-Adjust `.env` as per your needs and start the container:
+Adjust `.env` as per your needs and start the container.
 
-To run **TESTNET** fullnode or validator change this
+To run **TESTNET** fullnode or validator, change this in `.env`:
 ```bash
 TON_BRANCH=testnet
 GLOBAL_CONFIG_URL=https://ton.org/testnet-global.config.json
@@ -58,16 +61,40 @@ Now you are ready to start the container
 docker compose up
 ```
 
-* Watch logs: `docker logs ton-node`
-* Use MyTonCtrl, go inside the container `docker exec -ti ton-node bash` and type `mytonctrl`.
+or Docker only way:
+```bash
+docker volume create ton-work
+docker volume create mytoncore
+
+docker run -d --name ton-node \
+        -v ton-work:/var/ton-work \
+        -v mytoncore:/usr/local/bin/mytoncore \
+        -e DUMP="true" \
+        -e TON_BRANCH="testnet" \
+        -e GLOBAL_CONFIG_URL="https://ton.org/testnet-global.config.json" \
+        --restart unless-stopped \
+        -it ghcr.io/ton-blockchain/ton-docker-ctrl:testnet
+```
+
+### Use MyTonCtrl
+Go inside the container and execute `mytonctrl`: 
+```bash
+docker exec -ti ton-node bash
+mytonctrl
+```
+### Troubleshooting
+* Check the status of the container:
+```bash
+docker logs ton-node
+```
 
 ## Run TON Archive node with MyTonCtrl v2
 
 Download `docker-compose-archive.yml` and `.env` files:
 
 ```bash
-wget https://raw.githubusercontent.com/neodix42/ton-docker-ctrl-neodix/refs/heads/main/.env
-wget -O docker-compose.yml https://raw.githubusercontent.com/neodix42/ton-docker-ctrl-neodix/refs/heads/main/docker-compose-archive.yml
+wget https://raw.githubusercontent.com/ton-blockchain/ton-docker-ctrl/refs/heads/main/.env
+wget -O docker-compose.yml https://raw.githubusercontent.com/ton-blockchain/ton-docker-ctrl/refs/heads/main/docker-compose-archive.yml
 ```
 
 Edit volume creation parameters so they will point to your external storage:
@@ -87,7 +114,7 @@ volumes:
       device: /path/to/mtc_data 
 ```
 
-Start archive fullnode:
+Start the archive fullnode:
 ```bash
 docker compose up
 ```
@@ -96,7 +123,6 @@ docker compose up
 
 ```bash
 git clone https://github.com/ton-blockchain/ton-docker-ctrl.git && cd ./ton-docker-ctrl
-// adjust `.env` as per your needs 
 docker compose -f docker-compose.build.yml build
 ```
 
@@ -120,6 +146,7 @@ And from the container itself
 ```bash
 docker exec -ti ton-node bash
 mytonctrl
+update master
 upgrade master
 
 ```
@@ -147,7 +174,7 @@ Get inside the container and run MyTonCtrl
 docker exec -ti ton-node bash
 ```
 
-Start the container skipping original entrypoint execution
+Start the container skipping the original entrypoint execution
 ```bash
 docker run -it --entrypoint=bash ghcr.io/ton-blockchain/ton-docker-ctrl:latest
 ```
